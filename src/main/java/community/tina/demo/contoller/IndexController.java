@@ -6,13 +6,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
- * Created by Tina on 2020/1/20
+ * 主页
  * */
 @Controller
-public class HelloController {
+public class IndexController {
 
     @GetMapping("/")
-    public String hello(){
+    public String index(){
         return "index";
     }
 
