@@ -5,9 +5,14 @@ import community.tina.demo.dto.GithubUser;
 import community.tina.demo.provider.Githubprovider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * 当点击登录后，github会跳转返回callback请求并返回code和state信息，信息处理
  * */
@@ -25,7 +30,8 @@ public class AuthorizeController {
     private String clinetsecret;
     @RequestMapping("/callback")
     private String callback(@RequestParam(name="code") String code,
-                            @RequestParam(name="state")String state)
+                            @RequestParam(name="state")String state,
+                            HttpServletRequest request)
     {
 
         AccessTokenDTO accessTokenDTO=new AccessTokenDTO();
@@ -36,7 +42,16 @@ public class AuthorizeController {
         accessTokenDTO.setClient_secret(clinetsecret);
         String assessToken=githubProvider.getaccesstoken(accessTokenDTO);
         GithubUser user=githubProvider.getUser(assessToken);
-        System.out.println(user.getName());
-        return "index";
+        if (user!=null)
+        {
+            //登陆成功,写入session和cookie
+            request.getSession().setAttribute("user",user);
+            return "redirect:/";
+        }
+        else
+        {
+            //登陆失败
+            return "redirect:/";
+        }
     }
 }
