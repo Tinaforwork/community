@@ -26,8 +26,8 @@ import java.util.UUID;
 public class AuthorizeController {
 
     @Autowired
-    private Githubprovider githubProvider;
-
+    private Githubprovider githubProvider;//自动注入githubprovider
+    //注入GitHub的uri,clientid,clientsecret值(用于发送许可请求给GitHub服务器)
     @Value("${github.redirect.uri}")
     private String uri;
     @Value("${github.client.id}")
@@ -36,15 +36,15 @@ public class AuthorizeController {
     private String clinetsecret;
 
     @Autowired
-    private UserMapper userMapper;
+    private UserMapper userMapper;//自动注入数据库接口
 
-    @RequestMapping("/callback")
-    private String callback(@RequestParam(name="code") String code,
-                            @RequestParam(name="state")String state,
-                            HttpServletRequest request,
-                            HttpServletResponse response)
+    @RequestMapping("/callback")//当github回调时，会返回许可的信息
+    private String callback(@RequestParam(name="code") String code,//接收返回的code
+                            @RequestParam(name="state")String state,//接收返回的state值，表示这是该应用的第几个进程？？？
+                            HttpServletRequest request,//请求
+                            HttpServletResponse response)//回应
     {
-
+        //创建一个access token对象，存储的所有从GitHub接收到的许可信息
         AccessTokenDTO accessTokenDTO=new AccessTokenDTO();
         accessTokenDTO.setCode(code);
         accessTokenDTO.setRedirect_uri(uri);
@@ -52,6 +52,7 @@ public class AuthorizeController {
         accessTokenDTO.setClient_id(clientid);
         accessTokenDTO.setClient_secret(clinetsecret);
         String assessToken=githubProvider.getaccesstoken(accessTokenDTO);
+        //通过获取到的access_token字符信息获取user的信息
         GithubUser githubUser=githubProvider.getUser(assessToken);
         if (githubUser!=null)
         {
@@ -62,7 +63,9 @@ public class AuthorizeController {
             user.setAccountId(String.valueOf(githubUser.getId()));
             user.setGmtCreate(System.currentTimeMillis());
             user.setGmtModified(user.getGmtCreate());
+            //把接收到的http的post获取的user的信息存入数据库
             userMapper.insert(user);
+            //再把token信息放入response浏览器的cookie的token值中，以便下次直接读取cookie
             response.addCookie(new Cookie("token",token));
             //登陆成功,写入session和cookie
             //request.getSession().setAttribute("user",githubUser);

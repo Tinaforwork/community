@@ -1,5 +1,7 @@
 package community.tina.demo.model;
-
+/**
+ * 这是数据库中的对应值（用户信息）
+ * **/
 public class User {
     private Integer id;
     private String name;

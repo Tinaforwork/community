@@ -1,7 +1,7 @@
 package community.tina.demo.dto;
 
 /**
- * 这是返回信息
+ * 这是网络传输中的返回信息
  * **/
 public class AccessTokenDTO {
     private String client_id;

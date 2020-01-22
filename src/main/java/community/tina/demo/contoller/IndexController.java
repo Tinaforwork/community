@@ -17,24 +17,24 @@ import javax.servlet.http.HttpServletResponse;
  * */
 @Controller
 public class IndexController {
-    @Autowired
+    @Autowired//自动注入数据库的接口
     private UserMapper userMapper;
+
     @GetMapping("/")
     public String index(HttpServletRequest request){
         Cookie[] cookies=request.getCookies();
-
+        //获取请求中的cookie信息
         if (cookies!=null)
         {
             for (Cookie cookie:cookies)
             {
                 if(cookie.getName().equals("token"))
-                {
-
-                    String token=cookie.getValue();
-                    User user=userMapper.findByToken(token);
+                {//遍历cookies,获取token信息
+                    String token=cookie.getValue();//取出cookie中的token的具体值
+                    User user=userMapper.findByToken(token);//通过cookie中的token值查找数据库内的用户信息
                     if (user !=null)
                     {
-                        request.getSession().setAttribute("user",user);
+                        request.getSession().setAttribute("user",user);//session中设置user的信息，以便在前端显示出来
                     }
                     break;
                 }

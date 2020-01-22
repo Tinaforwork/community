@@ -1,6 +1,6 @@
 package community.tina.demo.dto;
 /**
- * 这是用户信息
+ * 这是网络传输中的用户信息
 * */
 public class GithubUser {
     private String name;
